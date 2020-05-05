@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -608,13 +608,13 @@ public class NegativityScript : MonoBehaviour
 		string[] parameters = command.Split(' ');
 		if (Regex.IsMatch(command, @"^\s*submit\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
 		{
+			yield return null;
 			if (!Playable)
 			{
 				yield return "sendtochaterror Can not press the button since the button is not yet accessable.";
 				yield break;
 			}
 			
-			yield return null;
 			Buttons[1].OnInteract();
 		}
 		
@@ -638,6 +638,7 @@ public class NegativityScript : MonoBehaviour
 		
 		else if (parameters[0].Contains('+') || parameters[0].Contains('-'))
 		{
+			yield return null;
 			if (!Playable)
 			{
 				yield return "sendtochaterror Can not press the screen since the button is not yet accessable.";
