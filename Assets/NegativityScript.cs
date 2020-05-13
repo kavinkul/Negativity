@@ -34,13 +34,13 @@ public class NegativityScript : MonoBehaviour
 	};
 	
 	bool Playable = false;
+	bool Silent = false;
 
 	private int Totale = 0;
 	string Tables;
 	
 	int RotationsNumber = 0;
 	private int[] Status = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	private bool Chad = false;
 	private int KSop = 0;
 	private int Switcher = 0;
 
@@ -172,9 +172,14 @@ public class NegativityScript : MonoBehaviour
 			Buttons[index].AddInteractionPunch(.2f);
 			if (index == 0)
 			{
-				if (Ternary.text.Length < 9)
+				if (KSop == 0)
 				{
-					if (KSop == 1)
+					if (Silent == true) Silent = false; else Silent = true;
+				}
+				
+				else if (KSop == 1)
+				{
+					if (Ternary.text.Length < 9)
 					{
 						Audio.PlaySoundAtTransform(SFX[1].name, transform);
 						Ternary.text += Switcher == 0 ? "-" : "+";
@@ -222,11 +227,15 @@ public class NegativityScript : MonoBehaviour
 
 	IEnumerator Rotations()
 	{
-		while (Chad == false)
+		while (true)
 		{
 			for (int b = RotationsNumber; b < 10; b++)
 			{
-				Audio.PlaySoundAtTransform(SFX[1].name, transform);
+				if (Silent == false)
+				{
+					Audio.PlaySoundAtTransform(SFX[1].name, transform);
+				}
+				
 				RotationsNumber = (RotationsNumber + 1) % 10;
 				if (b == 0)
 				{
@@ -269,7 +278,7 @@ public class NegativityScript : MonoBehaviour
 
 	IEnumerator Flashes()
 	{
-		while (Chad == false)
+		while (true)
 		{
 			NumberLine.text = "";
 			for (int c = 0; c < 2; c++)
@@ -587,7 +596,7 @@ public class NegativityScript : MonoBehaviour
 			yield return new WaitForSecondsRealtime(0.5f);
 			Module.HandleStrike();
 			Debug.LogFormat("[Negativity #{0}] The balanced was destroyed. The balanced is being restored. A strike is given as a punishment.", moduleId);
-			Playable = true; Totale = 0; KSop = 0; SAndC[0].text = "C"; SAndC[1].text = "S"; 
+			Playable = true; Totale = 0; KSop = 0; RotationsNumber = 0; SAndC[0].text = "C"; SAndC[1].text = "S"; 
 			for (int x = 0; x < 9; x++)
 			{
 				TernaryFunctions[0][x] = 0;
@@ -598,7 +607,7 @@ public class NegativityScript : MonoBehaviour
 	
 	//twitch plays
     #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"!{0} submit presses the submit button | !{0} clear presses the clear button | !{0} [- or +] delivers the answer to the module (This command can be performed in a chain)";
+    private readonly string TwitchHelpMessage = @"!{0} submit presses the submit button | !{0} clear presses the clear button | !{0} tick / !{0} silent will determine if the cycle produces a sound or not | !{0} [- or +] delivers the answer to the module (This command can be performed in a chain)";
     #pragma warning restore 414
 	
 	string[] Validity = {"+", "-"};
@@ -634,6 +643,30 @@ public class NegativityScript : MonoBehaviour
 			}
 			
 			Buttons[2].OnInteract();
+		}
+		
+		else if (Regex.IsMatch(command, @"^\s*silent\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+		{
+			yield return null;
+			if (Silent == true)
+			{
+				yield return "sendtochaterror The cycle is already silent.";
+				yield break;
+			}
+			Silent = true;
+			yield return "sendtochat The cycle is now producing no sound.";
+		}
+		
+		else if (Regex.IsMatch(command, @"^\s*tick\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+		{
+			yield return null;
+			if (Silent == false)
+			{
+				yield return "sendtochaterror The cycle is already ticking.";
+				yield break;
+			}
+			Silent = false;
+			yield return "sendtochat The cycle is now producing a ticking sound.";
 		}
 		
 		else if (parameters[0].Contains('+') || parameters[0].Contains('-'))
