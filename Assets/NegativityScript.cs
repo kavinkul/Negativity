@@ -623,7 +623,8 @@ public class NegativityScript : MonoBehaviour
 				yield return "sendtochaterror Can not press the button since the button is not yet accessable.";
 				yield break;
 			}
-			
+			yield return "solve";
+			yield return "strike";
 			Buttons[1].OnInteract();
 		}
 		
